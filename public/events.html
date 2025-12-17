@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clubs & Events - Campus Connect</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .club-card {
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .club-card:hover {
+            transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container header-content">
+            <a href="dashboard.html" class="logo">Campus Connect</a>
+            <a href="dashboard.html" class="btn"
+                style="background: rgba(255,255,255,0.1); padding: 0.5rem 1rem;">Back</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Club Selection View -->
+        <div id="clubSelectionView">
+            <h2 style="margin-bottom: 2rem;">Select a Club</h2>
+            <div class="nav-grid">
+                <div class="card club-card" onclick="openClub('RJIT GEEKS', '1')">
+                    <h3>RJIT GEEKS</h3>
+                    <p>For the coding enthusiasts.</p>
+                </div>
+                <div class="card club-card" onclick="openClub('INNOvators', '2')">
+                    <h3>INNOvators</h3>
+                    <p>Creating the future.</p>
+                </div>
+                <div class="card club-card" onclick="openClub('MANTHAN', '3')">
+                    <h3>MANTHAN</h3>
+                    <p>Cultural and arts society.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Club Feed View (Hidden by default) -->
+        <div id="clubFeedView" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 id="clubTitle">Club Name</h2>
+                <div style="display: flex; gap: 1rem;">
+                    <button class="btn" onclick="closeClub()" style="background: rgba(255,255,255,0.1);">Back to
+                        Clubs</button>
+                    <button id="newItemBtn" class="btn btn-primary">+ Announce Event</button>
+                </div>
+            </div>
+
+            <div id="itemForm" class="card" style="display: none; margin-bottom: 2rem;">
+                <h3>Announce Event for <span id="formClubName"></span></h3>
+                <form id="postForm">
+                    <div class="form-group">
+                        <label>Event Name</label>
+                        <input type="text" id="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Details</label>
+                        <textarea id="content" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Publish</button>
+                </form>
+            </div>
+
+            <div id="postsContainer" class="nav-grid">
+                <!-- Posts loaded here -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) window.location.href = 'index.html';
+
+        let currentClub = null;
+        let currentClubId = null;
+
+        const clubs = {
+            'RJIT GEEKS': '1',
+            'INNOvators': '2',
+            'MANTHAN': '3'
+        };
+
+        function openClub(clubName, requiredId) {
+            // Check Access
+            if (user.role === 'student' && user.student_id !== requiredId) {
+                alert(`Access Denied! You must belong to ${clubName} (ID: ${requiredId}) to access this club.`);
+                return;
+            }
+
+            // Grant Access
+            currentClub = clubName;
+            currentClubId = requiredId;
+
+            document.getElementById('clubSelectionView').style.display = 'none';
+            document.getElementById('clubFeedView').style.display = 'block';
+            document.getElementById('clubTitle').textContent = clubName;
+            document.getElementById('formClubName').textContent = clubName;
+
+            loadPosts();
+        }
+
+        function closeClub() {
+            document.getElementById('clubSelectionView').style.display = 'block';
+            document.getElementById('clubFeedView').style.display = 'none';
+            document.getElementById('itemForm').style.display = 'none';
+            currentClub = null;
+        }
+
+        const formDiv = document.getElementById('itemForm');
+        document.getElementById('newItemBtn').addEventListener('click', () => formDiv.style.display = 'block');
+
+        async function loadPosts() {
+            if (!currentClub) return;
+
+            const res = await fetch(`/api/posts?type=event&club=${encodeURIComponent(currentClub)}`);
+            const { data } = await res.json();
+            const container = document.getElementById('postsContainer');
+            container.innerHTML = '';
+
+            if (data.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">No events announced yet.</p>';
+                return;
+            }
+
+            data.forEach(post => {
+                const card = document.createElement('div');
+                card.className = 'card nav-card';
+                card.style.borderColor = 'var(--secondary-color)';
+                card.innerHTML = `
+                    <h3 style="color: var(--secondary-color)">${post.title}</h3>
+                    <p style="margin-bottom: 1rem;">${post.content}</p>
+                    <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border-color); font-size: 0.8rem; color: var(--text-muted);">
+                        Organizer: ${post.author_name}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        document.getElementById('postForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+
+            const res = await fetch('/api/posts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    type: 'event',
+                    title,
+                    content,
+                    author_id: user.id,
+                    club: currentClub // Save which club this belongs to
+                })
+            });
+
+            if (res.ok) {
+                formDiv.style.display = 'none';
+                e.target.reset();
+                loadPosts();
+            }
+        });
+    </script>
+</body>
+
+</html>

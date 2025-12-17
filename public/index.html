@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Campus Connect</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="card auth-box">
+            <div class="auth-header">
+                <h1>Campus Connect</h1>
+                <p>Your digital campus companion</p>
+            </div>
+
+            <form id="authForm">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" required placeholder="Enter your email">
+                </div>
+
+                <div class="form-group" id="nameGroup" style="display: none;">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" placeholder="Enter your full name">
+                </div>
+
+                <div class="form-group" id="studentIdGroup" style="display: none;">
+                    <label for="student_id">Student ID</label>
+                    <input type="text" id="student_id" placeholder="Enter Student ID">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required placeholder="Enter password">
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%">Sign In</button>
+
+                <p style="margin-top: 1.5rem; text-align: center; font-size: 0.9rem; color: var(--text-muted)">
+                    Detailed prototype access for <br>
+                    <span style="color: var(--primary-color)">Teachers & Students</span>
+                </p>
+                <div style="text-align: center; margin-top: 1rem;">
+                    <a href="#" id="toggleRegister" style="color: var(--secondary-color); text-decoration: none;">New
+                        here? Register</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('authForm');
+        let isRegister = false;
+        const studentIdGroup = document.getElementById('studentIdGroup');
+        const nameGroup = document.getElementById('nameGroup');
+
+        document.getElementById('toggleRegister').addEventListener('click', (e) => {
+            e.preventDefault();
+            isRegister = !isRegister;
+            const btn = form.querySelector('button');
+            const toggle = e.target;
+            const title = document.querySelector('.auth-header h1');
+
+            if (isRegister) {
+                btn.textContent = 'Create Account';
+                toggle.textContent = 'Already have an account? Sign In';
+                nameGroup.style.display = 'block';
+
+                // Add role selection for register
+                if (!document.getElementById('role')) {
+                    const roleGroup = document.createElement('div');
+                    roleGroup.className = 'form-group';
+                    roleGroup.id = 'role-group';
+                    roleGroup.innerHTML = `
+                        <label for="role">I am a</label>
+                        <select id="role">
+                            <option value="student">Student</option>
+                            <option value="teacher">Teacher</option>
+                        </select>
+                    `;
+                    form.insertBefore(roleGroup, btn);
+
+                    // Show student ID if student is selected
+                    document.getElementById('role').addEventListener('change', (ev) => {
+                        studentIdGroup.style.display = ev.target.value === 'student' ? 'block' : 'none';
+                    });
+                    studentIdGroup.style.display = 'block'; // Default to student
+                }
+            } else {
+                btn.textContent = 'Sign In';
+                toggle.textContent = 'New here? Register';
+                nameGroup.style.display = 'none';
+                const roleGroup = document.getElementById('role-group');
+                if (roleGroup) roleGroup.remove();
+                studentIdGroup.style.display = 'none';
+            }
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const role = isRegister ? document.getElementById('role').value : undefined;
+            const student_id = isRegister && role === 'student' ? document.getElementById('student_id').value : undefined;
+            const name = isRegister ? document.getElementById('name').value : undefined;
+
+            const endpoint = isRegister ? '/api/register' : '/api/login';
+
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password, role, student_id, name })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    if (isRegister) {
+                        alert('Registration successful! Please login.');
+                        isRegister = false;
+                        document.getElementById('toggleRegister').click(); // Switch back to login
+                    } else {
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                        window.location.href = 'dashboard.html';
+                    }
+                } else {
+                    alert(data.error || 'An error occurred');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Connection error');
+            }
+        });
+    </script>
+
+</body>
+
+</html>

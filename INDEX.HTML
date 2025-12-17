@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Connect | Student Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #ffbe0b;
+            --danger: #e63946;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            color: var(--accent);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        nav a:hover, nav a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #d91a6a;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: white;
+            border: 1px solid white;
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            min-height: calc(100vh - 160px);
+            margin-top: 30px;
+        }
+
+        .sidebar {
+            flex: 0 0 250px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-right: 20px;
+            height: fit-content;
+        }
+
+        .sidebar h3 {
+            margin-bottom: 15px;
+            color: var(--secondary);
+            border-bottom: 2px solid var(--light-gray);
+            padding-bottom: 8px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .sidebar li:hover {
+            background-color: var(--light-gray);
+        }
+
+        .sidebar li.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .sidebar li i {
+            margin-right: 10px;
+            width: 20px;
+        }
+
+        .content {
+            flex: 1;
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Form Styles */
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--light-gray);
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Notes Section */
+        .notes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .note-card {
+            background-color: var(--light);
+            border-left: 4px solid var(--success);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .note-card h4 {
+            margin-bottom: 10px;
+            color: var(--secondary);
+        }
+
+        .note-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 15px;
+        }
+
+        /* Clubs Section */
+        .club-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            border-top: 3px solid var(--primary);
+        }
+
+        .club-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .club-name {
+            font-size: 1.3rem;
+            color: var(--secondary);
+        }
+
+        .club-date {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .club-description {
+            margin-bottom: 15px;
+        }
+
+        /* Helpdesk Section */
+        .question-form {
+            background-color: var(--light);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .question-list {
+            margin-top: 30px;
+        }
+
+        .question-item {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--warning);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .question-author {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .question-date {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .question-text {
+            margin-bottom: 15px;
+        }
+
+        .answer-form {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed var(--light-gray);
+        }
+
+        .answer-item {
+            background-color: var(--light-gray);
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
+        .answer-author {
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+            margin-bottom: 20px;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 15px;
+            color: var(--success);
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section li {
+            margin-bottom: 8px;
+        }
+
+        .footer-section a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+            margin-top: 20px;
+            color: #aaa;
+        }
+
+        /* User Profile */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+            
+            .notes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-3 {
+            margin-top: 1rem;
+        }
+
+        .mb-3 {
+            margin-bottom: 1rem;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fas fa-university"></i>
+                <span>Campus Connect</span>
+            </div>
+            
+            <nav>
+                <ul>
+                    <li><a href="#" class="nav-link active" data-section="home">Home</a></li>
+                    <li><a href="#" class="nav-link" data-section="notes">Notes</a></li>
+                    <li><a href="#" class="nav-link" data-section="clubs">Club Updates</a></li>
+                    <li><a href="#" class="nav-link" data-section="helpdesk">Helpdesk</a></li>
+                </ul>
+            </nav>
+            
+            <div class="auth-buttons" id="authButtons">
+                <button class="btn btn-outline" id="loginBtn">Login</button>
+                <button class="btn btn-primary" id="registerBtn">Register</button>
+            </div>
+            
+            <div class="user-profile hidden" id="userProfile">
+                <div class="user-avatar" id="userAvatar">JD</div>
+                <span id="userName">John Doe</span>
+                <button class="btn btn-outline" id="logoutBtn">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container main-content">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h3>Quick Links</h3>
+            <ul>
+                <li class="sidebar-link active" data-section="home"><i class="fas fa-home"></i> Dashboard</li>
+                <li class="sidebar-link" data-section="notes"><i class="fas fa-book"></i> Study Notes</li>
+                <li class="sidebar-link" data-section="clubs"><i class="fas fa-users"></i> Club Events</li>
+                <li class="sidebar-link" data-section="helpdesk"><i class="fas fa-question-circle"></i> Helpdesk</li>
+                <li class="sidebar-link" data-section="profile"><i class="fas fa-user"></i> My Profile</li>
+            </ul>
+            
+            <h3 class="mt-3">Upcoming Events</h3>
+            <ul>
+                <li><i class="fas fa-calendar-alt"></i> Tech Fest - Oct 15</li>
+                <li><i class="fas fa-calendar-alt"></i> Coding Competition - Oct 20</li>
+                <li><i class="fas fa-calendar-alt"></i> Cultural Night - Oct 25</li>
+            </ul>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content">
+            <!-- Home/Dashboard -->
+            <div class="content-section active" id="home-section">
+                <h2>Welcome to Campus Connect</h2>
+                <p class="mb-3">Your one-stop hub for college resources, club updates, study materials, and peer support.</p>
+                
+                <div class="alert alert-success">
+                    <strong>New Feature!</strong> You can now upload and share notes with your classmates.
+                </div>
+                
+                <div class="notes-grid">
+                    <div class="note-card">
+                        <h4>Computer Science Notes</h4>
+                        <p>Data Structures and Algorithms complete notes from Dr. Smith's lectures. Updated with latest examples.</p>
+                        <div class="note-meta">
+                            <span>By: Jane Cooper</span>
+                            <span>Oct 10, 2023</span>
+                        </div>
+                    </div>
+                    
+                    <div class="note-card">
+                        <h4>Mathematics Formulas</h4>
+                        <p>All important calculus and linear algebra formulas compiled for quick revision before exams.</p>
+                        <div class="note-meta">
+                            <span>By: Alex Johnson</span>
+                            <span>Oct 8, 2023</span>
+                        </div>
+                    </div>
+                    
+                    <div class="note-card">
+                        <h4>Physics Lab Manual</h4>
+                        <p>Complete lab manual for Physics 101 with experiment procedures and expected results.</p>
+                        <div class="note-meta">
+                            <span>By: Robert Chen</span>
+                            <span>Oct 5, 2023</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes Section -->
+            <div class="content-section" id="notes-section">
+                <div class="notes-header">
+                    <h2>Study Notes</h2>
+                    <button class="btn btn-primary" id="addNoteBtn"><i class="fas fa-plus"></i> Add New Note</button>
+                </div>
+                
+                <div class="notes-grid" id="notesContainer">
+                    <!-- Notes will be dynamically added here -->
+                </div>
+            </div>
+
+            <!-- Clubs Section -->
+            <div class="content-section" id="clubs-section">
+                <h2>Club Updates & Events</h2>
+                
+                <div id="clubsContainer">
+                    <!-- Club updates will be dynamically added here -->
+                </div>
+            </div>
+
+            <!-- Helpdesk Section -->
+            <div class="content-section" id="helpdesk-section">
+                <h2>Student Helpdesk</h2>
+                <p>Ask questions and get answers from peers and teachers.</p>
+                
+                <div class="question-form">
+                    <h3>Ask a Question</h3>
+                    <div class="form-group">
+                        <textarea class="form-control" id="questionInput" rows="3" placeholder="Type your question here..."></textarea>
+                    </div>
+                    <button class="btn btn-primary" id="askQuestionBtn">Submit Question</button>
+                </div>
+                
+                <div class="question-list" id="questionsContainer">
+                    <!-- Questions will be dynamically added here -->
+                </div>
+            </div>
+
+            <!-- Registration Form -->
+            <div class="content-section" id="register-section">
+                <div class="form-container">
+                    <h2 class="text-center">Create Account</h2>
+                    <form id="registerForm">
+                        <div class="form-group">
+                            <label for="regName">Full Name</label>
+                            <input type="text" id="regName" class="form-control" placeholder="Enter your full name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="regEmail">Email Address</label>
+                            <input type="email" id="regEmail" class="form-control" placeholder="Enter your email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="regStudentId">Student ID</label>
+                            <input type="text" id="regStudentId" class="form-control" placeholder="Enter your student ID" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="regPassword">Password</label>
+                            <input type="password" id="regPassword" class="form-control" placeholder="Create a password" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="regConfirmPassword">Confirm Password</label>
+                            <input type="password" id="regConfirmPassword" class="form-control" placeholder="Confirm your password" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Register</button>
+                        
+                        <p class="text-center mt-3">
+                            Already have an account? <a href="#" id="showLoginLink">Login here</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Login Form -->
+            <div class="content-section" id="login-section">
+                <div class="form-container">
+                    <h2 class="text-center">Login to Campus Connect</h2>
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="loginEmail">Email Address</label>
+                            <input type="email" id="loginEmail" class="form-control" placeholder="Enter your email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+                        
+                        <p class="text-center mt-3">
+                            Don't have an account? <a href="#" id="showRegisterLink">Register here</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-section">
+                <h3>Campus Connect</h3>
+                <p>Connecting students with resources, events, and each other for a better college experience.</p>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Notes</a></li>
+                    <li><a href="#">Clubs</a></li>
+                    <li><a href="#">Helpdesk</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-envelope"></i> contact@campusconnect.edu</li>
+                    <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+                    <li><i class="fas fa-map-marker-alt"></i> University Campus, City, State</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="container copyright">
+            <p>&copy; 2023 Campus Connect. All rights reserved. | Hackathon Project</p>
+        </div>
+    </footer>
+
+    <script>
+        // Application State
+        const state = {
+            currentUser: null,
+            isLoggedIn: false,
+            notes: [
+                { id: 1, title: "Computer Science Notes", content: "Data Structures and Algorithms complete notes from Dr. Smith's lectures. Updated with latest examples.", author: "Jane Cooper", date: "Oct 10, 2023", subject: "Computer Science" },
+                { id: 2, title: "Mathematics Formulas", content: "All important calculus and linear algebra formulas compiled for quick revision before exams.", author: "Alex Johnson", date: "Oct 8, 2023", subject: "Mathematics" },
+                { id: 3, title: "Physics Lab Manual", content: "Complete lab manual for Physics 101 with experiment procedures and expected results.", author: "Robert Chen", date: "Oct 5, 2023", subject: "Physics" }
+            ],
+            clubs: [
+                { id: 1, name: "RJIT GEEKS", date: "Oct 15, 2023", description: "Weekly coding session on advanced algorithms. All levels welcome. Bring your laptop!", location: "CS Building Room 301" },
+                { id: 2, name: "MANTHAN", date: "Oct 18, 2023", description: "Auditions for the annual college play 'The Last Lecture'. No prior experience needed.", location: "Auditorium" },
+                { id: 3, name: "INNOVATORS", date: "Oct 20, 2023", description: "Campus clean-up drive followed by a seminar on sustainable practices.", location: "Main Quad" }
+            ],
+            questions: [
+                { 
+                    id: 1, 
+                    text: "Can someone explain the concept of recursion in programming?", 
+                    author: "Mike Ross", 
+                    date: "Oct 9, 2023",
+                    answers: [
+                        { text: "Recursion is when a function calls itself until a base condition is met. Think of it like Russian dolls!", author: "Prof. James", date: "Oct 10, 2023" },
+                        { text: "Check the CS notes section, there's a good example there.", author: "Sarah Lee", date: "Oct 9, 2023" }
+                    ]
+                },
+                { 
+                    id: 2, 
+                    text: "Where can I find past exam papers for Calculus 101?", 
+                    author: "Emma Watson", 
+                    date: "Oct 7, 2023",
+                    answers: [
+                        { text: "The library has a digital archive. Ask at the front desk.", author: "Prof. Rodriguez", date: "Oct 8, 2023" }
+                    ]
+                }
+            ]
+        };
+
+        // DOM Elements
+        const contentSections = document.querySelectorAll('.content-section');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+        const authButtons = document.getElementById('authButtons');
+        const userProfile = document.getElementById('userProfile');
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const showLoginLink = document.getElementById('showLoginLink');
+        const showRegisterLink = document.getElementById('showRegisterLink');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const notesContainer = document.getElementById('notesContainer');
+        const clubsContainer = document.getElementById('clubsContainer');
+        const questionsContainer = document.getElementById('questionsContainer');
+        const addNoteBtn = document.getElementById('addNoteBtn');
+        const askQuestionBtn = document.getElementById('askQuestionBtn');
+        const questionInput = document.getElementById('questionInput');
+
+        // Show specific section
+        function showSection(sectionId) {
+            // Hide all sections
+            contentSections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show the requested section
+            document.getElementById(`${sectionId}-section`).classList.add('active');
+            
+            // Update active nav link
+            navLinks.forEach(link => {
+                if (link.dataset.section === sectionId) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+            
+            // Update active sidebar link
+            sidebarLinks.forEach(link => {
+                if (link.dataset.section === sectionId) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+            
+            // Load section content if needed
+            if (sectionId === 'notes') {
+                renderNotes();
+            } else if (sectionId === 'clubs') {
+                renderClubs();
+            } else if (sectionId === 'helpdesk') {
+                renderQuestions();
+            }
+        }
+
+        // Render notes
+        function renderNotes() {
+            notesContainer.innerHTML = '';
+            
+            state.notes.forEach(note => {
+                const noteElement = document.createElement('div');
+                noteElement.className = 'note-card';
+                noteElement.innerHTML = `
+                    <h4>${note.title}</h4>
+                    <p>${note.content}</p>
+                    <div class="note-meta">
+                        <span>By: ${note.author}</span>
+                        <span>${note.date}</span>
+                    </div>
+                `;
+                notesContainer.appendChild(noteElement);
+            });
+        }
+
+        // Render clubs
+        function renderClubs() {
+            clubsContainer.innerHTML = '';
+            
+            state.clubs.forEach(club => {
+                const clubElement = document.createElement('div');
+                clubElement.className = 'club-card';
+                clubElement.innerHTML = `
+                    <div class="club-header">
+                        <div class="club-name">${club.name}</div>
+                        <div class="club-date">${club.date}</div>
+                    </div>
+                    <div class="club-description">${club.description}</div>
+                    <div><strong>Location:</strong> ${club.location}</div>
+                `;
+                clubsContainer.appendChild(clubElement);
+            });
+        }
+
+        // Render questions
+        function renderQuestions() {
+            questionsContainer.innerHTML = '';
+            
+            state.questions.forEach(question => {
+                const questionElement = document.createElement('div');
+                questionElement.className = 'question-item';
+                questionElement.innerHTML = `
+                    <div class="question-header">
+                        <div class="question-author">${question.author}</div>
+                        <div class="question-date">${question.date}</div>
+                    </div>
+                    <div class="question-text">${question.text}</div>
+                    <div class="answers">
+                        ${question.answers.map(answer => `
+                            <div class="answer-item">
+                                <div class="answer-author">${answer.author}</div>
+                                <div>${answer.text}</div>
+                                <div class="question-date">${answer.date}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="answer-form">
+                        <textarea class="form-control" placeholder="Write an answer..." rows="2" data-question-id="${question.id}"></textarea>
+                        <button class="btn btn-primary mt-3 answer-btn" data-question-id="${question.id}">Submit Answer</button>
+                    </div>
+                `;
+                questionsContainer.appendChild(questionElement);
+            });
+            
+            // Add event listeners to answer buttons
+            document.querySelectorAll('.answer-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const questionId = parseInt(this.dataset.questionId);
+                    const textarea = document.querySelector(`textarea[data-question-id="${questionId}"]`);
+                    const answerText = textarea.value.trim();
+                    
+                    if (answerText && state.currentUser) {
+                        const newAnswer = {
+                            text: answerText,
+                            author: state.currentUser.name,
+                            date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                        };
+                        
+                        const question = state.questions.find(q => q.id === questionId);
+                        if (question) {
+                            question.answers.push(newAnswer);
+                            renderQuestions();
+                        }
+                    } else if (!state.currentUser) {
+                        alert('Please login to answer questions.');
+                        showSection('login');
+                    } else {
+                        alert('Please enter an answer.');
+                    }
+                });
+            });
+        }
+
+        // Handle user registration
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const studentId = document.getElementById('regStudentId').value;
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            // In a real app, this would be sent to a server
+            state.currentUser = {
+                name: name,
+                email: email,
+                studentId: studentId,
+                initials: name.split(' ').map(n => n[0]).join('')
+            };
+            state.isLoggedIn = true;
+            
+            // Update UI for logged in state
+            authButtons.classList.add('hidden');
+            userProfile.classList.remove('hidden');
+            document.getElementById('userName').textContent = state.currentUser.name;
+            document.getElementById('userAvatar').textContent = state.currentUser.initials;
+            
+            // Show home section
+            showSection('home');
+            
+            // Clear form
+            registerForm.reset();
+            
+            alert('Registration successful! Welcome to Campus Connect.');
+        });
+
+        // Handle user login
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            // In a real app, this would be validated against a server
+            // For demo, we'll accept any non-empty credentials
+            if (email && password) {
+                state.currentUser = {
+                    name: "Demo User",
+                    email: email,
+                    studentId: "STU2023001",
+                    initials: "DU"
+                };
+                state.isLoggedIn = true;
+                
+                // Update UI for logged in state
+                authButtons.classList.add('hidden');
+                userProfile.classList.remove('hidden');
+                document.getElementById('userName').textContent = state.currentUser.name;
+                document.getElementById('userAvatar').textContent = state.currentUser.initials;
+                
+                // Show home section
+                showSection('home');
+                
+                // Clear form
+                loginForm.reset();
+                
+                alert('Login successful! Welcome back.');
+            } else {
+                alert('Please enter both email and password.');
+            }
+        });
+
+        // Handle logout
+        logoutBtn.addEventListener('click', function() {
+            state.currentUser = null;
+            state.isLoggedIn = false;
+            
+            // Update UI for logged out state
+            authButtons.classList.remove('hidden');
+            userProfile.classList.add('hidden');
+            
+            // Show login section
+            showSection('login');
+            
+            alert('You have been logged out.');
+        });
+
+        // Handle adding a new note
+        addNoteBtn.addEventListener('click', function() {
+            if (!state.isLoggedIn) {
+                alert('Please login to add notes.');
+                showSection('login');
+                return;
+            }
+            
+            const title = prompt('Enter note title:');
+            if (!title) return;
+            
+            const content = prompt('Enter note content:');
+            if (!content) return;
+            
+            const newNote = {
+                id: state.notes.length + 1,
+                title: title,
+                content: content,
+                author: state.currentUser.name,
+                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                subject: "General"
+            };
+            
+            state.notes.unshift(newNote);
+            renderNotes();
+            alert('Note added successfully!');
+        });
+
+        // Handle asking a question
+        askQuestionBtn.addEventListener('click', function() {
+            if (!state.isLoggedIn) {
+                alert('Please login to ask questions.');
+                showSection('login');
+                return;
+            }
+            
+            const questionText = questionInput.value.trim();
+            if (!questionText) {
+                alert('Please enter a question.');
+                return;
+            }
+            
+            const newQuestion = {
+                id: state.questions.length + 1,
+                text: questionText,
+                author: state.currentUser.name,
+                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                answers: []
+            };
+            
+            state.questions.unshift(newQuestion);
+            questionInput.value = '';
+            renderQuestions();
+            alert('Question submitted!');
+        });
+
+        // Event Listeners for Navigation
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const sectionId = this.dataset.section;
+                showSection(sectionId);
+            });
+        });
+
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const sectionId = this.dataset.section;
+                
+                // For profile, show login if not logged in
+                if (sectionId === 'profile' && !state.isLoggedIn) {
+                    alert('Please login to view your profile.');
+                    showSection('login');
+                    return;
+                }
+                
+                showSection(sectionId);
+            });
+        });
+
+        // Show login/register forms
+        loginBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            showSection('login');
+        });
+
+        registerBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            showSection('register');
+        });
+
+        showLoginLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            showSection('login');
+        });
+
+        showRegisterLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            showSection('register');
+        });
+
+        // Initialize the app
+        function initApp() {
+            // Render initial data
+            renderNotes();
+            renderClubs();
+            renderQuestions();
+            
+            // Show home section by default
+            showSection('home');
+        }
+
+        // Start the app
+        initApp();
+    </script>
+</body>
+</html>

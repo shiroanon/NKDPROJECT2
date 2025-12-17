@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Campus Connect</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <header>
+        <div class="container header-content">
+            <a href="dashboard.html" class="logo">Campus Connect</a>
+            <nav style="display: flex; gap: 1rem; align-items: center;">
+                <a href="profile.html" id="welcomeMsg"
+                    style="font-size: 0.9rem; color: var(--text-muted); text-decoration: none;"></a>
+                <button id="logoutBtn" class="btn"
+                    style="background: rgba(255,255,255,0.1); padding: 0.5rem 1rem; font-size: 0.8rem;">Logout</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div style="text-align: center; padding: 2rem 0;">
+            <h1
+                style="font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(to right, var(--primary-color), var(--secondary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Welcome Back
+            </h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem;">Access all your campus resources in one place.</p>
+        </div>
+
+        <div class="nav-grid">
+            <a href="lost-found.html" class="card nav-card">
+                <h3>🔍 Lost & Found</h3>
+                <p>Report lost items or find what you're looking for.</p>
+            </a>
+
+            <a href="notes.html" class="card nav-card">
+                <h3>📚 Notes & Resources</h3>
+                <p>Access study materials, assignments, and shared notes.</p>
+            </a>
+
+            <a href="forum.html" class="card nav-card">
+                <h3>💡 Help Desk & Forum</h3>
+                <p>Ask doubts, get answers from teachers and seniors.</p>
+            </a>
+
+            <a href="events.html" class="card nav-card">
+                <h3>🎉 Events & Clubs</h3>
+                <p>Stay updated with campus events and club activities.</p>
+            </a>
+        </div>
+    </main>
+
+    <script>
+        // Auth Check
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) window.location.href = 'index.html';
+
+        document.getElementById('welcomeMsg').textContent = `Hi, ${user.name || user.email} (${user.role})`;
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+
+</html>

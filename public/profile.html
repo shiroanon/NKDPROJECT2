@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Campus Connect</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <header>
+        <div class="container header-content">
+            <a href="dashboard.html" class="logo">Campus Connect</a>
+            <a href="dashboard.html" class="btn"
+                style="background: rgba(255,255,255,0.1); padding: 0.5rem 1rem;">Back</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="card" style="max-width: 600px; margin: 2rem auto;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div
+                    style="width: 100px; height: 100px; background: var(--primary-color); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: bold;">
+                    <span id="initials">U</span>
+                </div>
+                <h2 id="userName">User Name</h2>
+                <p id="userRole" style="color: var(--secondary-color); text-transform: capitalize;">Role</p>
+            </div>
+
+            <div style="display: grid; gap: 1rem;">
+                <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">
+                    <label style="font-size: 0.8rem; display: block; margin-bottom: 0.2rem;">Email</label>
+                    <div id="userEmail" style="font-size: 1.1rem;">email@example.com</div>
+                </div>
+
+                <div id="studentIdSection"
+                    style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; display: none;">
+                    <label style="font-size: 0.8rem; display: block; margin-bottom: 0.2rem;">Student ID</label>
+                    <div id="userStudentId" style="font-size: 1.1rem;">12345</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) window.location.href = 'index.html';
+
+        document.getElementById('userName').textContent = user.name || 'No Name';
+        document.getElementById('userRole').textContent = user.role;
+        document.getElementById('userEmail').textContent = user.email;
+        document.getElementById('initials').textContent = (user.name || user.email).charAt(0).toUpperCase();
+
+        if (user.role === 'student' && user.student_id) {
+            document.getElementById('studentIdSection').style.display = 'block';
+            document.getElementById('userStudentId').textContent = user.student_id;
+        }
+    </script>
+</body>
+
+</html>

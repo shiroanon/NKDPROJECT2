@@ -1,0 +1,51 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CampusConnect</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background:#f5f7fb; }
+    header { background:#1f2937; color:#fff; padding:15px; text-align:center; }
+    nav { display:flex; gap:10px; justify-content:center; margin:15px; }
+    nav button { padding:10px 15px; border:none; border-radius:6px; cursor:pointer; }
+    section { display:none; background:#fff; margin:15px; padding:15px; border-radius:8px; }
+    section.active { display:block; }
+    h2 { margin-top:0; }
+    input, textarea { width:100%; padding:8px; margin:6px 0; }
+    .card { background:#eef2ff; padding:10px; margin:8px 0; border-radius:6px; }
+  </style>
+</head>
+<body><header>
+  <h1>CampusConnect</h1>
+  <p>One platform for students</p>
+</header><nav>
+  <button onclick="showSection('lost')">Lost & Found</button>
+  <button onclick="showSection('notes')">Notes</button>
+  <button onclick="showSection('events')">Events</button>
+  <button onclick="showSection('help')">Help Desk</button>
+</nav><section id="lost" class="active">
+  <h2>Lost & Found</h2>
+  <input placeholder="Item name" />
+  <textarea placeholder="Description"></textarea>
+  <button>Add Item</button>
+  <div class="card">Lost: Black Wallet near Library</div>
+</section><section id="notes">
+  <h2>Notes Sharing</h2>
+  <input placeholder="Subject name" />
+  <button>Upload Notes</button>
+  <div class="card">Maths Notes - Unit 1</div>
+</section><section id="events">
+  <h2>Event Notifications</h2>
+  <div class="card">Hackathon on 20 Dec</div>
+  <div class="card">Tech Fest Registration Open</div>
+</section><section id="help">
+  <h2>Help Desk</h2>
+  <textarea placeholder="Write your query"></textarea>
+  <button>Submit</button>
+</section><script>
+  function showSection(id) {
+    document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+</script></body>
+</html>

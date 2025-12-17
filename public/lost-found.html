@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost & Found - Campus Connect</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <header>
+        <div class="container header-content">
+            <a href="dashboard.html" class="logo">Campus Connect</a>
+            <a href="dashboard.html" class="btn"
+                style="background: rgba(255,255,255,0.1); padding: 0.5rem 1rem;">Back</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2>Lost & Found</h2>
+            <button id="newItemBtn" class="btn btn-primary">+ Report Item</button>
+        </div>
+
+        <!-- Post Form (Hidden by default) -->
+        <div id="itemForm" class="card" style="display: none; margin-bottom: 2rem;">
+            <h3>Report an Item</h3>
+            <form id="postForm">
+                <div class="form-group">
+                    <label>Title (What was lost/found?)</label>
+                    <input type="text" id="title" required>
+                </div>
+                <div class="form-group">
+                    <label>Description (Location, Time, etc.)</label>
+                    <textarea id="content" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Image URL (Optional)</label>
+                    <input type="url" id="image_url" placeholder="https://example.com/item.jpg">
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="button" id="cancelBtn" class="btn"
+                        style="background: rgba(255,255,255,0.1);">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="postsContainer" class="nav-grid">
+            <!-- Posts will be loaded here -->
+            <p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Loading items...</p>
+        </div>
+    </main>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) window.location.href = 'index.html';
+
+        const formDiv = document.getElementById('itemForm');
+        document.getElementById('newItemBtn').addEventListener('click', () => formDiv.style.display = 'block');
+        document.getElementById('cancelBtn').addEventListener('click', () => formDiv.style.display = 'none');
+
+        async function loadPosts() {
+            try {
+                const res = await fetch('/api/posts?type=lost_found');
+                const { data } = await res.json();
+                const container = document.getElementById('postsContainer');
+                container.innerHTML = '';
+
+                if (data.length === 0) {
+                    container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">No items reported yet.</p>';
+                    return;
+                }
+
+                data.forEach(post => {
+                    const card = document.createElement('div');
+                    card.className = 'card nav-card';
+                    card.innerHTML = `
+                        <h3>${post.title}</h3>
+                        ${post.image_url ? `<img src="${post.image_url}" style="width:100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem;">` : ''}
+                        <p style="margin-bottom: 1rem;">${post.content}</p>
+                        <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border-color); font-size: 0.8rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+                            <span>By: ${post.author_name}</span>
+                            <span>${new Date(post.created_at).toLocaleDateString()}</span>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        document.getElementById('postForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+            const image_url = document.getElementById('image_url').value;
+
+            try {
+                const res = await fetch('/api/posts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        type: 'lost_found',
+                        title,
+                        content,
+                        image_url,
+                        author_id: user.id
+                    })
+                });
+
+                if (res.ok) {
+                    formDiv.style.display = 'none';
+                    e.target.reset();
+                    loadPosts();
+                } else {
+                    alert('Failed to post');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        loadPosts();
+    </script>
+</body>
+
+</html>
