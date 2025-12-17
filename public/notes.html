@@ -35,6 +35,33 @@
                     <textarea id="content" rows="3" required
                         placeholder="Paste Drive link or describe the assignment..."></textarea>
                 </div>
+
+                <div class="form-group">
+                    <label>Target Branch (Optional)</label>
+                    <select id="target_branches">
+                        <option value="">All Branches</option>
+                        <option value="CSE">CSE</option>
+                        <option value="ECE">ECE</option>
+                        <option value="MECH">MECH</option>
+                        <option value="CIVIL">CIVIL</option>
+                        <option value="EE">EE</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Target Semester (Optional)</label>
+                    <select id="target_semesters">
+                        <option value="">All Semesters</option>
+                        <option value="1">Sem 1</option>
+                        <option value="2">Sem 2</option>
+                        <option value="3">Sem 3</option>
+                        <option value="4">Sem 4</option>
+                        <option value="5">Sem 5</option>
+                        <option value="6">Sem 6</option>
+                        <option value="7">Sem 7</option>
+                        <option value="8">Sem 8</option>
+                    </select>
+                </div>
+
                 <button type="submit" class="btn btn-primary">Share</button>
             </form>
         </div>
@@ -58,17 +85,40 @@
         }
 
         async function loadPosts() {
-            const res = await fetch('/api/posts?type=note');
+            // Build query params based on user profile
+            const params = new URLSearchParams({
+                type: 'note',
+                user_role: user.role
+            });
+
+            if (user.role === 'student') {
+                if (user.branch) params.append('user_branch', user.branch);
+                if (user.semester) params.append('user_semester', user.semester);
+            } else if (user.role === 'teacher') {
+                // Teachers might want to see what they posted or everything?
+                // Sending their teaching info just in case backend filters by it
+                if (user.teaching_branches) params.append('user_teaching_branches', user.teaching_branches);
+            }
+
+            const res = await fetch(`/api/posts?${params.toString()}`);
             const { data } = await res.json();
             const container = document.getElementById('postsContainer');
             container.innerHTML = '';
+
+            if (data.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">No resources found for your profile.</p>';
+                return;
+            }
 
             data.forEach(post => {
                 const card = document.createElement('div');
                 card.className = 'card nav-card';
                 card.innerHTML = `
                     <h3>${post.title}</h3>
-                    <p style="margin-bottom: 1rem; word-break: break-all;">${post.content}</p>
+                    <p style="margin-bottom: 0.5rem; word-break: break-all;">${post.content}</p>
+                    <div style="font-size: 0.8rem; color: var(--secondary-color); margin-bottom: 1rem;">
+                        Targets: ${post.target_branches || 'All'} / ${post.target_semesters ? 'Sem ' + post.target_semesters : 'All'}
+                    </div>
                     <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border-color); font-size: 0.8rem; color: var(--text-muted);">
                         Shared by: ${post.author_name}
                     </div>
@@ -81,11 +131,20 @@
             e.preventDefault();
             const title = document.getElementById('title').value;
             const content = document.getElementById('content').value;
+            const target_branches = document.getElementById('target_branches').value;
+            const target_semesters = document.getElementById('target_semesters').value;
 
             const res = await fetch('/api/posts', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ type: 'note', title, content, author_id: user.id })
+                body: JSON.stringify({
+                    type: 'note',
+                    title,
+                    content,
+                    author_id: user.id,
+                    target_branches,
+                    target_semesters
+                })
             });
 
             if (res.ok) {

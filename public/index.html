@@ -10,7 +10,7 @@
 
 <body>
     <div class="auth-container">
-        <div class="card auth-box">
+        <div class="card auth-box" style="max-width: 500px">
             <div class="auth-header">
                 <h1>Campus Connect</h1>
                 <p>Your digital campus companion</p>
@@ -22,22 +22,100 @@
                     <input type="email" id="email" required placeholder="Enter your email">
                 </div>
 
-                <div class="form-group" id="nameGroup" style="display: none;">
-                    <label for="name">Full Name</label>
-                    <input type="text" id="name" placeholder="Enter your full name">
-                </div>
-
-                <div class="form-group" id="studentIdGroup" style="display: none;">
-                    <label for="student_id">Student ID</label>
-                    <input type="text" id="student_id" placeholder="Enter Student ID">
-                </div>
-
                 <div class="form-group">
                     <label for="password">Password</label>
                     <input type="password" id="password" required placeholder="Enter password">
                 </div>
 
-                <button type="submit" class="btn btn-primary" style="width: 100%">Sign In</button>
+                <!-- Registration Fields -->
+                <div id="registerFields" style="display: none;">
+                    <div class="form-group">
+                        <label for="mobile_number">Mobile Number</label>
+                        <input type="tel" id="mobile_number" placeholder="Enter mobile number">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" placeholder="Enter your full name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="role">I am a</label>
+                        <select id="role">
+                            <option value="student">Student</option>
+                            <option value="teacher">Teacher</option>
+                        </select>
+                    </div>
+
+                    <!-- Student Specific -->
+                    <div id="studentFields">
+                        <div class="form-group">
+                            <label for="student_id">Student ID</label>
+                            <input type="text" id="student_id" placeholder="Enter Student ID">
+                        </div>
+                        <div class="form-group">
+                            <label for="branch">Branch</label>
+                            <select id="branch">
+                                <option value="CSE">CSE</option>
+                                <option value="ECE">ECE</option>
+                                <option value="MECH">MECH</option>
+                                <option value="CIVIL">CIVIL</option>
+                                <option value="EE">EE</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="year">Year</label>
+                            <select id="year">
+                                <option value="1">1st Year</option>
+                                <option value="2">2nd Year</option>
+                                <option value="3">3rd Year</option>
+                                <option value="4">4th Year</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="semester">Semester</label>
+                            <select id="semester">
+                                <option value="1">Sem 1</option>
+                                <option value="2">Sem 2</option>
+                                <option value="3">Sem 3</option>
+                                <option value="4">Sem 4</option>
+                                <option value="5">Sem 5</option>
+                                <option value="6">Sem 6</option>
+                                <option value="7">Sem 7</option>
+                                <option value="8">Sem 8</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Teacher Specific -->
+                    <div id="teacherFields" style="display: none;">
+                        <div class="form-group">
+                            <label for="teaching_branches">Teaching Branches (Hold Ctrl for multiple)</label>
+                            <select id="teaching_branches" multiple style="height: 100px;">
+                                <option value="CSE">CSE</option>
+                                <option value="ECE">ECE</option>
+                                <option value="MECH">MECH</option>
+                                <option value="CIVIL">CIVIL</option>
+                                <option value="EE">EE</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="teaching_semesters">Teaching Semesters (Hold Ctrl for multiple)</label>
+                            <select id="teaching_semesters" multiple style="height: 100px;">
+                                <option value="1">Sem 1</option>
+                                <option value="2">Sem 2</option>
+                                <option value="3">Sem 3</option>
+                                <option value="4">Sem 4</option>
+                                <option value="5">Sem 5</option>
+                                <option value="6">Sem 6</option>
+                                <option value="7">Sem 7</option>
+                                <option value="8">Sem 8</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 20px;">Sign In</button>
 
                 <p style="margin-top: 1.5rem; text-align: center; font-size: 0.9rem; color: var(--text-muted)">
                     Detailed prototype access for <br>
@@ -54,48 +132,36 @@
     <script>
         const form = document.getElementById('authForm');
         let isRegister = false;
-        const studentIdGroup = document.getElementById('studentIdGroup');
-        const nameGroup = document.getElementById('nameGroup');
+        const registerFields = document.getElementById('registerFields');
+        const studentFields = document.getElementById('studentFields');
+        const teacherFields = document.getElementById('teacherFields');
+        const roleSelect = document.getElementById('role');
 
         document.getElementById('toggleRegister').addEventListener('click', (e) => {
             e.preventDefault();
             isRegister = !isRegister;
-            const btn = form.querySelector('button');
+            const btn = form.querySelector('button[type="submit"]');
             const toggle = e.target;
             const title = document.querySelector('.auth-header h1');
 
             if (isRegister) {
                 btn.textContent = 'Create Account';
                 toggle.textContent = 'Already have an account? Sign In';
-                nameGroup.style.display = 'block';
-
-                // Add role selection for register
-                if (!document.getElementById('role')) {
-                    const roleGroup = document.createElement('div');
-                    roleGroup.className = 'form-group';
-                    roleGroup.id = 'role-group';
-                    roleGroup.innerHTML = `
-                        <label for="role">I am a</label>
-                        <select id="role">
-                            <option value="student">Student</option>
-                            <option value="teacher">Teacher</option>
-                        </select>
-                    `;
-                    form.insertBefore(roleGroup, btn);
-
-                    // Show student ID if student is selected
-                    document.getElementById('role').addEventListener('change', (ev) => {
-                        studentIdGroup.style.display = ev.target.value === 'student' ? 'block' : 'none';
-                    });
-                    studentIdGroup.style.display = 'block'; // Default to student
-                }
+                registerFields.style.display = 'block';
             } else {
                 btn.textContent = 'Sign In';
                 toggle.textContent = 'New here? Register';
-                nameGroup.style.display = 'none';
-                const roleGroup = document.getElementById('role-group');
-                if (roleGroup) roleGroup.remove();
-                studentIdGroup.style.display = 'none';
+                registerFields.style.display = 'none';
+            }
+        });
+
+        roleSelect.addEventListener('change', (e) => {
+            if (e.target.value === 'student') {
+                studentFields.style.display = 'block';
+                teacherFields.style.display = 'none';
+            } else {
+                studentFields.style.display = 'none';
+                teacherFields.style.display = 'block';
             }
         });
 
@@ -103,9 +169,29 @@
             e.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const role = isRegister ? document.getElementById('role').value : undefined;
-            const student_id = isRegister && role === 'student' ? document.getElementById('student_id').value : undefined;
-            const name = isRegister ? document.getElementById('name').value : undefined;
+
+            let body = { email, password };
+
+            if (isRegister) {
+                const role = document.getElementById('role').value;
+                const name = document.getElementById('name').value;
+                const mobile_number = document.getElementById('mobile_number').value;
+
+                body = { ...body, role, name, mobile_number };
+
+                if (role === 'student') {
+                    body.student_id = document.getElementById('student_id').value;
+                    body.branch = document.getElementById('branch').value;
+                    body.year = document.getElementById('year').value;
+                    body.semester = document.getElementById('semester').value;
+                } else if (role === 'teacher') {
+                    // Get multiple values
+                    const branches = Array.from(document.getElementById('teaching_branches').selectedOptions).map(o => o.value);
+                    const semesters = Array.from(document.getElementById('teaching_semesters').selectedOptions).map(o => o.value);
+                    body.teaching_branches = JSON.stringify(branches);
+                    body.teaching_semesters = JSON.stringify(semesters);
+                }
+            }
 
             const endpoint = isRegister ? '/api/register' : '/api/login';
 
@@ -113,7 +199,7 @@
                 const res = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password, role, student_id, name })
+                    body: JSON.stringify(body)
                 });
 
                 const data = await res.json();
@@ -124,6 +210,7 @@
                         isRegister = false;
                         document.getElementById('toggleRegister').click(); // Switch back to login
                     } else {
+                        // Store detailed user info
                         localStorage.setItem('user', JSON.stringify(data.user));
                         window.location.href = 'dashboard.html';
                     }

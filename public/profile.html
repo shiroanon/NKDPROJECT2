@@ -31,15 +31,59 @@
             <div style="display: grid; gap: 1rem;">
                 <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">
                     <label style="font-size: 0.8rem; display: block; margin-bottom: 0.2rem;">Email</label>
-                    <div id="userEmail" style="font-size: 1.1rem;">email@example.com</div>
+                    <div id="userEmail" style="font-size: 1.1rem;"></div>
                 </div>
 
-                <div id="studentIdSection"
-                    style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; display: none;">
-                    <label style="font-size: 0.8rem; display: block; margin-bottom: 0.2rem;">Student ID</label>
-                    <div id="userStudentId" style="font-size: 1.1rem;">12345</div>
+                <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">
+                    <label style="font-size: 0.8rem; display: block; margin-bottom: 0.2rem;">Mobile Number</label>
+                    <div id="userMobile" style="font-size: 1.1rem;">-</div>
+                </div>
+
+                <!-- Student Info -->
+                <div id="studentInfo" style="display: none; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">
+                        <label style="font-size: 0.8rem; display: block; margin-bottom: 0.2rem;">Student ID</label>
+                        <div id="userStudentId" style="font-size: 1.1rem;"></div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">
+                        <label style="font-size: 0.8rem; display: block; margin-bottom: 0.2rem;">Branch</label>
+                        <div id="userBranch" style="font-size: 1.1rem;"></div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">
+                        <label style="font-size: 0.8rem; display: block; margin-bottom: 0.2rem;">Year</label>
+                        <div id="userYear" style="font-size: 1.1rem;"></div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">
+                        <label style="font-size: 0.8rem; display: block; margin-bottom: 0.2rem;">Semester</label>
+                        <div id="userSem" style="font-size: 1.1rem;"></div>
+                    </div>
+                </div>
+
+                <!-- Teacher Info -->
+                <div id="teacherInfo" style="display: none; gap: 1rem;">
+                    <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">
+                        <label style="font-size: 0.8rem; display: block; margin-bottom: 0.2rem;">Teaching
+                            Branches</label>
+                        <div id="teachBranches" style="font-size: 1.1rem;"></div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">
+                        <label style="font-size: 0.8rem; display: block; margin-bottom: 0.2rem;">Teaching
+                            Semesters</label>
+                        <div id="teachSemesters" style="font-size: 1.1rem;"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- My Students Section for Teachers -->
+            <div id="myStudentsSection" style="margin-top: 2rem; display: none;">
+                <h3 style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+                    My Students</h3>
+                <div id="studentsList" style="display: grid; gap: 1rem;">
+                    <!-- Student Cards Loaded Here -->
                 </div>
             </div>
+
         </div>
     </main>
 
@@ -50,11 +94,70 @@
         document.getElementById('userName').textContent = user.name || 'No Name';
         document.getElementById('userRole').textContent = user.role;
         document.getElementById('userEmail').textContent = user.email;
+        document.getElementById('userMobile').textContent = user.mobile_number || '-';
         document.getElementById('initials').textContent = (user.name || user.email).charAt(0).toUpperCase();
 
-        if (user.role === 'student' && user.student_id) {
-            document.getElementById('studentIdSection').style.display = 'block';
+        if (user.role === 'student') {
+            document.getElementById('studentInfo').style.display = 'grid';
             document.getElementById('userStudentId').textContent = user.student_id;
+            document.getElementById('userBranch').textContent = user.branch;
+            document.getElementById('userYear').textContent = user.year;
+            document.getElementById('userSem').textContent = user.semester;
+        } else if (user.role === 'teacher') {
+            document.getElementById('teacherInfo').style.display = 'grid';
+
+            // Format arrays
+            const formatList = (str) => {
+                try { return JSON.parse(str).join(', '); }
+                catch (e) { return str; }
+            };
+            document.getElementById('teachBranches').textContent = formatList(user.teaching_branches);
+            document.getElementById('teachSemesters').textContent = formatList(user.teaching_semesters);
+
+            // Load Students
+            loadMyStudents();
+        }
+
+        async function loadMyStudents() {
+            document.getElementById('myStudentsSection').style.display = 'block';
+            const studentsList = document.getElementById('studentsList');
+            studentsList.innerHTML = '<p>Loading...</p>';
+
+            const params = new URLSearchParams({
+                teaching_branches: user.teaching_branches,
+                teaching_semesters: user.teaching_semesters
+            });
+
+            try {
+                const res = await fetch(`/api/my-students?${params.toString()}`);
+                const { data } = await res.json();
+                studentsList.innerHTML = '';
+
+                if (data.length === 0) {
+                    studentsList.innerHTML = '<p style="color: var(--text-muted)">No students found matching your criteria.</p>';
+                    return;
+                }
+
+                data.forEach(s => {
+                    const item = document.createElement('div');
+                    item.className = 'card';
+                    item.style.padding = '1rem';
+                    item.style.background = 'rgba(255,255,255,0.05)';
+                    item.innerHTML = `
+                        <div style="font-weight: bold; margin-bottom: 0.2rem;">${s.name}</div>
+                        <div style="font-size: 0.9rem; color: var(--text-muted); display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                            <span>ID: ${s.student_id}</span>
+                            <span>${s.branch} / Sem ${s.semester}</span>
+                            <span>Email: ${s.email}</span>
+                            <span>Mobile: ${s.mobile_number || '-'}</span>
+                        </div>
+                    `;
+                    studentsList.appendChild(item);
+                });
+            } catch (err) {
+                console.error(err);
+                studentsList.innerHTML = '<p>Error loading students.</p>';
+            }
         }
     </script>
 </body>

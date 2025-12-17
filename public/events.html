@@ -96,10 +96,10 @@
 
         function openClub(clubName, requiredId) {
             // Check Access
-            if (user.role === 'student' && user.student_id !== requiredId) {
-                alert(`Access Denied! You must belong to ${clubName} (ID: ${requiredId}) to access this club.`);
-                return;
-            }
+            // Prompt: "students ... should be able to view event, just dont allow them to add event"
+            // Removing the strict ID check that blocked viewing. 
+            // If there's a specific "Club Member" logic, it's not clearly defined for "viewing".
+            // We assume public read access for all logged in users.
 
             // Grant Access
             currentClub = clubName;
@@ -109,6 +109,22 @@
             document.getElementById('clubFeedView').style.display = 'block';
             document.getElementById('clubTitle').textContent = clubName;
             document.getElementById('formClubName').textContent = clubName;
+
+            // Hide Add Button for Students unless they manage THIS club
+            const newItemBtn = document.getElementById('newItemBtn');
+            if (user.role === 'student') {
+                if (user.managed_club === clubName) {
+                    newItemBtn.style.display = 'block';
+                } else {
+                    newItemBtn.style.display = 'none';
+                }
+            } else if (user.role === 'teacher') {
+                // Teachers cannot add club events as per "club admins are students not teachers"
+                newItemBtn.style.display = 'none';
+            } else {
+                // Admin or others (fallback)
+                newItemBtn.style.display = 'block';
+            }
 
             loadPosts();
         }

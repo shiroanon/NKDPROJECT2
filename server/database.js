@@ -19,9 +19,16 @@ function initializeTables() {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             email TEXT UNIQUE,
             name TEXT,
+            mobile_number TEXT,
             student_id TEXT,
             password TEXT,
             role TEXT CHECK(role IN ('student', 'teacher', 'admin')) DEFAULT 'student',
+            branch TEXT,
+            year TEXT,
+            semester TEXT,
+            managed_club TEXT,
+            teaching_branches TEXT,
+            teaching_semesters TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`);
 
@@ -35,6 +42,8 @@ function initializeTables() {
             club TEXT,
             author_id INTEGER,
             image_url TEXT,
+            target_branches TEXT,
+            target_semesters TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(author_id) REFERENCES users(id)
         )`);
@@ -51,6 +60,33 @@ function initializeTables() {
         )`);
 
         console.log('Tables initialized.');
+        seedDatabase();
+    });
+}
+
+function seedDatabase() {
+    const bcrypt = require('bcryptjs');
+    const saltRounds = 10;
+    const password = 'admin123';
+
+    const admins = [
+        { email: 'geek@rjit.com', name: 'RJIT GEEKS Admin', club: 'RJIT GEEKS' },
+        { email: 'innovator@rjit.com', name: 'INNOvators Admin', club: 'INNOvators' },
+        { email: 'manthan@rjit.com', name: 'MANTHAN Admin', club: 'MANTHAN' }
+    ];
+
+    admins.forEach(admin => {
+        db.get("SELECT id FROM users WHERE email = ?", [admin.email], (err, row) => {
+            if (!row) {
+                bcrypt.hash(password, saltRounds, (err, hash) => {
+                    if (err) return console.error(err);
+                    db.run(`INSERT INTO users (email, name, password, role, managed_club, student_id, branch, year, semester) 
+                        VALUES (?, ?, ?, 'student', ?, 'ADMIN', 'CSE', '4', '8')`,
+                        [admin.email, admin.name, hash, admin.club]);
+                    console.log(`Seeded admin: ${admin.email}`);
+                });
+            }
+        });
     });
 }
 
